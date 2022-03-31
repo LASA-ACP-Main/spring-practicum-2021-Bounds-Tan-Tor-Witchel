@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.21"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "LockSimulation",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "LockSimulation::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-LockSimulation-Debug-ffc0eba4e4e519adf91c.json",
+					"name" : "LockSimulation",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/gideo/Documents/GitHub/spring-practicum-2021-Bounds-Tan-Tor-Witchel/LockSimulation/cmake-build-debug",
+		"source" : "C:/Users/gideo/Documents/GitHub/spring-practicum-2021-Bounds-Tan-Tor-Witchel/LockSimulation"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}
