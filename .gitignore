@@ -1,2 +1,4 @@
 .idea/
 cmake-build-debug/
+LockSimulation/.idea/
+LockSimulation/cmake-build-debug/
