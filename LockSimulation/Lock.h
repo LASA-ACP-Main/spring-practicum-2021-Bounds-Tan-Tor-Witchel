@@ -1,15 +1,19 @@
-//
-// Created by gideo on 3/31/2022.
-//
 
 #ifndef LOCKSIMULATION_LOCK_H
 #define LOCKSIMULATION_LOCK_H
+class Lock {
+private:
+    bool open;
+public:
+    Lock();
 
-    bool open = false;
     bool getState();
-    bool openLock();
-    bool closeLock();
 
+    void openLock();
 
+    void closeLock();
+
+    void shutdown();
+};
 
 #endif //LOCKSIMULATION_LOCK_H

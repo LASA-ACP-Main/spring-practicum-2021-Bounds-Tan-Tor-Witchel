@@ -1,15 +1,20 @@
-//
-// Created by gideo on 3/31/2022.
-//
 
 #include "Lock.h"
 
-bool getState(){
+bool Lock::getState(){
     return open;
 }
-bool openLock(){
+void Lock::openLock(){
     open = true;
 }
-bool closeLock(){
+void Lock::closeLock(){
+    open = false;
+}
+
+Lock::Lock(){
+    open = false;
+}
+
+void Lock::shutdown(){
     open = false;
 }
