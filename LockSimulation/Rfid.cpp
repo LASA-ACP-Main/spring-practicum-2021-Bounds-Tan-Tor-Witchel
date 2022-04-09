@@ -2,7 +2,6 @@
 #include "Rfid.h"
 
 
-
 void Rfid::addUser(std::string userToAdd){
     authorizedUsers.push_back(userToAdd);
 }
@@ -26,13 +25,24 @@ void Rfid::setCurrentCode(std::string input){
 }
 
 Rfid::Rfid(std::string filePath){
-    //read valid RFIDs from file and add them to authorizedUsers
+    rfidFilePath = filePath;
+    vector<vector<string>> csvArr = parseCSV(ifstream(filePath));
+    authorizedUsers = csvArr[0];
 }
 
 bool Rfid::isCodeGood(){
-//compare current code to the list of valid codes
+    //compare current code to the list of valid codes
+    if(std::find(authorizedUsers.begin(), authorizedUsers.end(), currentCode) != authorizedUsers.end()){
+        return true;
+    }
+    return false;
 }
 
 void Rfid::shutdown(){
     //write all valid RFIDs to file
+    auto out = ofstream(rfidFilePath);
+    for (auto y : authorizedUsers) {
+        out << y << ",";
+    }
+    out.close();
 }

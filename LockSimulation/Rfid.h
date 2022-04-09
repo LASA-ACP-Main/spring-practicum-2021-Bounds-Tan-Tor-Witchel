@@ -3,6 +3,8 @@
 #include<string>
 #include<vector>
 #include<algorithm>
+#include <fstream>
+#include "csvManager.h"
 
 
 #ifndef LOCKSIMULATION_RFID_H
@@ -12,6 +14,7 @@ class Rfid {
 private:
     std::vector<std::string> authorizedUsers;
     std::string currentCode;
+    std::string rfidFilePath;
 public:
     Rfid(std::string filePath);
 

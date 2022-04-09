@@ -6,6 +6,7 @@
 //The main idea behind all of this is that there is a very high level of abstraction between main and each individual identification device
 //Each device manages itself and only interact with main as a boolean response of valid or invalid.
 //Each device should have a "shutdown" method which is called at shutdown to finalize its actions.
+//Each device should have a "isCodeGood" method which returns a boolean value depending on if it thinks the lock should be OK to go.
 
 
 //Notes:
@@ -13,8 +14,6 @@
 //That may only be possible (or at least may be made much easier) when the inputs are separate pieces of hardware, in which case the simulation may be a little flawed.
 
 //Todo:
-//figure out how to implement OTP
-//figure out how to read/write to files for OTP and RFIDs
 //custom binary tree implementation for RFIDs
 //where is that second data structure coming in again? custom queue?
 
@@ -29,7 +28,7 @@ void shutdownActions(){
 void getKeypadInput(Keypad* numPad){
     std::string s;
     std::cout << "Keypad Input:" << std::endl;
-    while (!(numPad->isCodeReady())) {
+    while (s != "#") {
         std::cin >> s;
         //This can be deleted outside the simulation because the keypad has a set number of inputs
         if (s != "0" && s != "1" && s != "2" && s != "3" && s != "4" && s != "5" && s != "6" && s != "7" &&
@@ -54,10 +53,11 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
     std::vector<std::string> users = rfidScanner->getUsers();
     int toRemove = -1;
     std::string toAdd;
+    std::string secretToAdd;
     while(inManagement) {
         //Input Loop
         std::cout << "Specify Management Feature" << std::endl;
-        std::cout << "0 = Exit and Close Lock, 1 = list RFID Users, 2 = remove RFID User, 3 = add RFID User" << std::endl;
+        std::cout << "0 = Exit and Close Lock, 1 = list RFID Users, 2 = remove RFID User, 3 = add RFID User, 4 = set OTP secret" << std::endl;
         int feature;
         std::cin >> feature;
         switch (feature) {
@@ -86,6 +86,11 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
                 std::cin >> toAdd;
                 rfidScanner->addUser(toAdd);
                 break;
+            case 4:
+                std::cout << "OTP Secret: " << std::endl;
+                std::cin >> secretToAdd;
+                numPad->setSecret(secretToAdd);
+                break;
         }
     }
 }
@@ -96,17 +101,17 @@ int main() {
     Lock* secureLock = new Lock;
 
     bool keepRunning = true;
-    bool keyCode;
-    bool rfidCode;
+    bool keyCode = false;
+    bool rfidCode = false;
 
     while(keepRunning) {
         //Check to open the lock
         if(keyCode && rfidCode){
             std::cout << "Lock Opened" << std::endl;
             secureLock->openLock();
+            keyCode = false;
+            rfidCode = false;
         }
-        keyCode = false;
-        rfidCode = false;
 
         //Input Loop
         std::cout << "Specify device input" << std::endl;

@@ -1,7 +1,10 @@
 
 #include <iostream>
+#include<ostream>
+#include<fstream>
 #include <queue>
 #include <string>
+#include "Otp.h"
 
 #ifndef LOCKSIMULATION_KEYPAD_H
 #define LOCKSIMULATION_KEYPAD_H
@@ -11,19 +14,24 @@ class Keypad {
 
         bool codeReady = false;
 
-        std::string secretKey;
-    public:
+        Otp* oneTimePass;
+
+        std::string otpFilePath;
+
+        //bool isCodeReady();
+
+        std::string getCode();
+
+public:
         Keypad(std::string filePath);
 
         void addValue(std::string value);
 
-        std::string getCode();
-
-        bool isCodeReady();
-
         void shutdown();
 
         bool isCodeGood();
+
+        void setSecret(std::string otpSecret);
 
 };
 
