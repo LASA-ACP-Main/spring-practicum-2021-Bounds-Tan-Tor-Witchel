@@ -96,8 +96,8 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
 }
 
 int main() {
-    Keypad* numPad = new Keypad("OPTSecret.txt");
-    Rfid* rfidScanner = new Rfid("validRFIDs.txt");
+    Keypad* numPad = new Keypad("OTPSecret.txt");
+    Rfid* rfidScanner = new Rfid("validRFIDs.csv");
     Lock* secureLock = new Lock;
 
     bool keepRunning = true;

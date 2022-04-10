@@ -45,13 +45,13 @@ bool Keypad::isCodeGood(){
 Keypad::Keypad(std::string filePath){
     //Read OTP Secret from file
     otpFilePath = filePath;
-    std::string secret = "";
+    std::string secret;
     std::ifstream myFile(filePath);
     if(myFile.is_open()){
         getline(myFile, secret);
     }
     else{
-        std::cout << "Failed to read OTP from file";
+       std::cout << "Failed to read OTP from file" << std::endl;
     }
     oneTimePass = new Otp(secret);
     myFile.close();
