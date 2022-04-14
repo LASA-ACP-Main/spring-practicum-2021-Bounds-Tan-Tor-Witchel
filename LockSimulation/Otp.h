@@ -9,16 +9,14 @@
 
 class Otp {
     private:
-    int getTime();
-        long long secret;
-
+        long long getTime();
+        std::string secret;
     public:
         Otp(std::string secretIn);
         std::string getCode();
         std::string getLastCode();
         void setSecret(std::string input, std::string filePath);
 
-    Otp(Otp *pOtp);
 };
 
 

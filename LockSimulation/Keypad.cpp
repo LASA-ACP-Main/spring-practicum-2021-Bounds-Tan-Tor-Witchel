@@ -2,22 +2,30 @@
 #include "Keypad.h"
 
 void Keypad::addValue(std::string value) {
-    if (input.size() > 7) {
-        input.pop();
+    //std::string code = "";
+    //for(int i = 0; i < inputs.size()-1; i++){
+    //    code += inputs.front();
+   // }
+    //std:: cout << "addValue Called: " << value << "Total Code: "<< code << std::endl;
+
+    if (inputs.size() > 6) {
+        inputs.pop();
     }
-    if(value == "#" && input.size() == 6){
+    if(value == "#" && inputs.size() >= 6){
         codeReady = true;
     }
-    input.push(value);
+    inputs.push(value);
 }
 
 std::string Keypad::getCode(){
     std::string code = "";
-    for(int i = 0; i < input.size()-1; i++){
-        code += input.front();
-        input.pop();
+    int x = inputs.size()-1;
+    for(int i = 0; i < x; i++){
+        code += inputs.front();
+        inputs.pop();
     }
     codeReady = false;
+    //clear();
     return code;
 }
 
@@ -29,6 +37,9 @@ bool Keypad::isCodeGood(){
     if(codeReady){
         //check code against OTP generation
         std::string code = getCode();
+        std::cout << code << std::endl;
+        std::cout << oneTimePass->getCode() << std::endl;
+        std::cout << oneTimePass->getLastCode() << std::endl;
         if(code == oneTimePass->getCode() || code == oneTimePass->getLastCode()){
             return true;
         }
@@ -39,6 +50,7 @@ bool Keypad::isCodeGood(){
     else{
         std::cout << "Code was not complete" << std::endl;
     }
+    clear();
     return false;
 }
 
@@ -61,7 +73,16 @@ void Keypad::setSecret(std::string otpSecret) {
     oneTimePass->setSecret(otpSecret, otpFilePath);
 }
 
+void Keypad::clear(){
+    int x = inputs.size();
+    for(int i = 0; i < x; i++){
+        inputs.pop();
+    }
+}
+
 void Keypad::shutdown() {
     //I don't think I need to do anything here
 }
+
+
 

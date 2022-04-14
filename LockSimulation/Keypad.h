@@ -10,7 +10,7 @@
 #define LOCKSIMULATION_KEYPAD_H
 class Keypad {
     private:
-        std::queue<std::string> input;
+        std::queue<std::string> inputs;
 
         bool codeReady = false;
 
@@ -21,6 +21,8 @@ class Keypad {
         //bool isCodeReady();
 
         std::string getCode();
+
+        void clear();
 
 public:
         Keypad(std::string filePath);
