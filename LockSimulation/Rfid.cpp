@@ -32,9 +32,13 @@ Rfid::Rfid(std::string filePath){
 
 bool Rfid::isCodeGood(){
     //compare current code to the list of valid codes
-    if(std::find(authorizedUsers.begin(), authorizedUsers.end(), currentCode) != authorizedUsers.end()){
-        return true;
+    //This linear search will be replaced with a binary tree search in the final version (once we implement that data structure)
+    for(int i = 0; i < authorizedUsers.size(); i++){
+        if(authorizedUsers[i] == currentCode){
+            return true;
+        }
     }
+
     return false;
 }
 

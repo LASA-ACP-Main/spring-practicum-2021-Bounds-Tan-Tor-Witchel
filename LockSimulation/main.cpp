@@ -21,14 +21,38 @@ void shutdownActions(){
 
 }
 
+bool isNum(std::string s){
+    if(s == "0" || s == "1" || s == "2" || s == "3" || s == "4" || s == "5" || s == "6" || s == "7" ||
+       s == "8" || s == "9"){
+        return true;
+    }
+    return false;
+}
+
+bool isNum(char s){
+    if(s == '0'  || s == '1' ||  s == '2' ||  s == '3' || s == '4'  || s == '5' || s == '6' || s == '7' ||
+       s == '8' || s == '9'){
+        return true;
+    }
+    return false;
+}
+
+bool isNumLong(std::string s){
+    for(int i = 0; i < s.length(); i++){
+        if(!isNum(s[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
 void getKeypadInput(Keypad* numPad){
     std::string s;
     std::cout << "Keypad Input:" << std::endl;
     while (s != "#") {
         std::cin >> s;
         //This can be deleted outside the simulation because the keypad has a set number of inputs
-        if (s != "0" && s != "1" && s != "2" && s != "3" && s != "4" && s != "5" && s != "6" && s != "7" &&
-            s != "8" && s != "9" && s != "#") {
+        if (!isNum(s) && s != "#") {
             std::cout << "Invalid Input" << std::endl;
         }
         else {
@@ -41,7 +65,12 @@ void getRfidInput(Rfid* rfidScanner){
     std::string s;
     std::cout << "Rfid Input:" << std::endl;
     std::cin >> s;
-    rfidScanner->setCurrentCode(s);
+    if(s.length() != 6 || !isNumLong(s)){
+        std::cout << "Invalid Input" << std::endl;
+    }
+    else {
+        rfidScanner->setCurrentCode(s);
+    }
 }
 
 void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
@@ -53,7 +82,7 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
     while(inManagement) {
         //Input Loop
         std::cout << "Specify Management Feature" << std::endl;
-        std::cout << "0 = Exit and Close Lock, 1 = list RFID Users, 2 = remove RFID User, 3 = add RFID User, 4 = set OTP secret" << std::endl;
+        std::cout << "0 = Exit and Close Lock, 1 = list RFID Users, 2 = remove RFID User, 3 = add RFID User, 4 = set OTP secret, 5 = Exit without closing the lock" << std::endl;
         int feature;
         std::cin >> feature;
         switch (feature) {
@@ -86,6 +115,12 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
                 std::cout << "OTP Secret: " << std::endl;
                 std::cin >> secretToAdd;
                 numPad->setSecret(secretToAdd);
+                break;
+            case 5:
+                inManagement = false;
+                break;
+            default:
+                std::cout << "Invalid Input" << std::endl;
                 break;
         }
     }
@@ -143,7 +178,9 @@ int main() {
                     managementMode(numPad, rfidScanner, secureLock);
                 }
                 break;
-
+            default:
+                std::cout << "Invalid Input" << std::endl;
+                break;
         }
     }
 
