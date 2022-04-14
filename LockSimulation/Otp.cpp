@@ -6,19 +6,19 @@ int Otp::getTime(){
 }
 
 Otp::Otp(std::string secretIn){
-    secret = stoi(secretIn);
+    secret = stoll(secretIn);
 }
 
 std::string Otp::getCode(){
     int time = getTime();
-    int key = secret*time;
+    long long key = secret*time;
     key = key%1000000;
     return std::to_string(key);
 }
 
 std::string Otp::getLastCode(){
     int time = getTime()-1;
-    int key = secret*time;
+    long long key = secret*time;
     key = key%1000000;
     return std::to_string(key);
 }

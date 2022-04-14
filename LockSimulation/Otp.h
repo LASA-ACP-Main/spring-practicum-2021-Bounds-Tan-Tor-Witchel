@@ -10,7 +10,7 @@
 class Otp {
     private:
     int getTime();
-        int secret;
+        long long secret;
 
     public:
         Otp(std::string secretIn);

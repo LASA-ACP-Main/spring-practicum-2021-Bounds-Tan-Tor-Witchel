@@ -17,10 +17,6 @@
 //custom binary tree implementation for RFIDs
 //where is that second data structure coming in again? custom queue?
 
-bool checkCredentials(std::string keyCode, std::string rfidCode){
-
-}
-
 void shutdownActions(){
 
 }
@@ -96,8 +92,9 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
 }
 
 int main() {
-    Keypad* numPad = new Keypad("OTPSecret.txt");
-    Rfid* rfidScanner = new Rfid("validRFIDs.csv");
+
+    Keypad* numPad = new Keypad("../OTPSecret.txt");
+    Rfid* rfidScanner = new Rfid("../validRFIDs.csv");
     Lock* secureLock = new Lock;
 
     bool keepRunning = true;
