@@ -16,6 +16,7 @@
 //Todo:
 //custom binary tree implementation for RFIDs
 //where is that second data structure coming in again? custom queue?
+//require both codes to be inputted within a certain time of each other (15 seconds?)
 
 void shutdownActions(){
 
@@ -75,7 +76,7 @@ void getRfidInput(Rfid* rfidScanner){
 
 void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
     bool inManagement = true;
-    std::vector<std::string> users = rfidScanner->getUsers();
+    std::vector<std::string> users;
     int toRemove = -1;
     std::string toAdd;
     std::string secretToAdd;
@@ -91,6 +92,7 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
                 inManagement = false;
                 break;
             case 1:
+                users = rfidScanner->getUsers();
                 std::cout << "Users: "<< std::endl;
                 for(int i = 0; i < users.size(); i++){
                     std::cout << "[" << i << "] " << users[i] << std::endl;
