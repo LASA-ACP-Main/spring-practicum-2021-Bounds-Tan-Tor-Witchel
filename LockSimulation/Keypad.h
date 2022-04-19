@@ -2,7 +2,7 @@
 #include <iostream>
 #include<ostream>
 #include<fstream>
-#include <queue>
+#include "SQueue.h"
 #include <string>
 #include "Otp.h"
 
@@ -10,7 +10,7 @@
 #define LOCKSIMULATION_KEYPAD_H
 class Keypad {
     private:
-        std::queue<std::string> inputs;
+        SQueue inputs;
 
         bool codeReady = false;
 
@@ -21,8 +21,6 @@ class Keypad {
         //bool isCodeReady();
 
         std::string getCode();
-
-        void clear();
 
 public:
         Keypad(std::string filePath);

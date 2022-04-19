@@ -21,11 +21,10 @@ std::string Keypad::getCode(){
     std::string code = "";
     int x = inputs.size()-1;
     for(int i = 0; i < x; i++){
-        code += inputs.front();
-        inputs.pop();
+        code += (inputs.pop());
     }
     codeReady = false;
-    //clear();
+    //inputs.clear();
     return code;
 }
 
@@ -37,9 +36,9 @@ bool Keypad::isCodeGood(){
     if(codeReady){
         //check code against OTP generation
         std::string code = getCode();
-        std::cout << code << std::endl;
-        std::cout << oneTimePass->getCode() << std::endl;
-        std::cout << oneTimePass->getLastCode() << std::endl;
+        //std::cout << code << std::endl;
+        //std::cout << oneTimePass->getCode() << std::endl;
+        //std::cout << oneTimePass->getLastCode() << std::endl;
         if(code == oneTimePass->getCode() || code == oneTimePass->getLastCode()){
             return true;
         }
@@ -50,7 +49,7 @@ bool Keypad::isCodeGood(){
     else{
         std::cout << "Code was not complete" << std::endl;
     }
-    clear();
+    inputs.clear();
     return false;
 }
 
@@ -71,13 +70,6 @@ Keypad::Keypad(std::string filePath){
 
 void Keypad::setSecret(std::string otpSecret) {
     oneTimePass->setSecret(otpSecret, otpFilePath);
-}
-
-void Keypad::clear(){
-    int x = inputs.size();
-    for(int i = 0; i < x; i++){
-        inputs.pop();
-    }
 }
 
 void Keypad::shutdown() {

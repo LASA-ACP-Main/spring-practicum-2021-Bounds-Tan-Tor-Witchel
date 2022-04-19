@@ -3,8 +3,8 @@
 #include <vector>
 #include <iostream>
 
-#ifndef RFID_CPP_CSVMANAGER_H
-#define RFID_CPP_CSVMANAGER_H
+#ifndef CSVMANAGER_H
+#define CSVMANAGER_H
 
 using namespace std;
 vector<string> parseLine(string str);
@@ -16,4 +16,4 @@ void printCol(vector<vector<string>> in, int col);
 void printCleanCol(vector<vector<string>> in, int col);
 void printRow(vector<vector<string>> in, int row);
 
-#endif //RFID_CPP_CSVMANAGER_H
+#endif //CSVMANAGER_H
