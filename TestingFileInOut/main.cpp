@@ -4,6 +4,8 @@
 #include <istream>
 #include <string>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 #define pathToRfidInput "../rfidIn.txt"
 #define pathToNumpadInput "../numpadIn.txt"
@@ -169,6 +171,7 @@ int main() {
         getRfidInput();
         getKeypadInput();
         checkManagementMode(keepRunning);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100) );
 
     }
     return 0;
