@@ -1,4 +1,7 @@
+//normal imports
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include "Lock.h"
 #include "Rfid.h"
 #include "Keypad.h"
@@ -16,9 +19,9 @@
 //Todo:
 //custom binary tree implementation for RFIDs
 //require both codes to be inputted within a certain time of each other (15 seconds?)
-#define pathToRfidInput "rfidIn.txt"
-#define pathToNumpadInput "numpadIn.txt"
-#define pathToManagementInput "managementIn.txt"
+#define pathToRfidInput "../rfidIn.txt"
+#define pathToNumpadInput "../numpadIn.txt"
+#define pathToManagementInput "../managementIn.txt"
 
 void shutdownActions(){
 
@@ -49,7 +52,7 @@ bool isNumLong(std::string s){
     return true;
 }
 
-void getKeypadInput(Keypad* numPad){
+void getKeypadInput(Keypad* numPad, bool* keyCode){
     std::string keypadRaw = "";
     std::fstream keypadFile(pathToNumpadInput);
     if (keypadFile.is_open() && !keypadFile.eof())
@@ -74,7 +77,8 @@ void getKeypadInput(Keypad* numPad){
     for(char x : keypadRaw){
         if(x == '#'){
             numPad->addValue("#");
-            break;
+            *keyCode = numPad->isCodeGood();
+            return;
         }
 
         if (!isNum(x)) {
@@ -86,7 +90,7 @@ void getKeypadInput(Keypad* numPad){
     }
 }
 
-void getRfidInput(Rfid* rfidScanner){
+void getRfidInput(Rfid* rfidScanner, bool* rfidCode){
     std::string rfidRaw = "";
     std::fstream rfidFile(pathToRfidInput);
     if (rfidFile.is_open() && !rfidFile.eof())
@@ -114,6 +118,7 @@ void getRfidInput(Rfid* rfidScanner){
     else {
         rfidScanner->setCurrentCode(rfidRaw);
     }
+    *rfidCode = rfidScanner->isCodeGood();
 }
 
 void checkManagementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock, bool* keepRunning){
@@ -189,25 +194,26 @@ int main() {
 
     bool* keepRunning = new bool;
     *keepRunning = true;
-    bool keyCode = false;
-    bool rfidCode = false;
+    bool* keyCode = new bool;
+    *keyCode = false;
+    bool* rfidCode = new bool;
+    *rfidCode = false;
 
     while(*keepRunning) {
         //Check to open the lock
-        if(keyCode && rfidCode){
+        if(*keyCode && *rfidCode){
             std::cout << "Lock Opened" << std::endl;
             secureLock->openLock();
-            keyCode = false;
-            rfidCode = false;
+            *keyCode = false;
+            *rfidCode = false;
         }
 
         //Input Loop
-        getRfidInput(rfidScanner);
-        rfidCode = rfidScanner->isCodeGood();
-        getKeypadInput(numPad);
-        keyCode = numPad->isCodeGood();
+        getRfidInput(rfidScanner, rfidCode);
+        getKeypadInput(numPad, keyCode);
         checkManagementMode(numPad, rfidScanner, secureLock, keepRunning);
-
+        //this is just to make sure it isn't going crazy on the disk. The delay is arbitrary and can be changed.
+        this_thread::sleep_for(chrono::milliseconds(100) );
     }
     return 0;
 }

@@ -35,10 +35,11 @@ bool Rfid::isCodeGood(){
     //This linear search will be replaced with a binary tree search in the final version (once we implement that data structure)
     for(int i = 0; i < authorizedUsers.size(); i++){
         if(authorizedUsers[i] == currentCode){
+            std::cout << "Correct RFID" << std::endl;
             return true;
         }
     }
-
+    std::cout << "Incorrect RFID" << std::endl;
     return false;
 }
 
