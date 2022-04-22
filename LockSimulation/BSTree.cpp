@@ -1,14 +1,25 @@
+/*
+ * Binary Search Tree class
+ * Do not alter the display() function, this will break the Repl.it 
+ * tests
+ */
 
+ 
+#include <iostream>
+#include <cstdlib>
 #include "BSTree.h"
 
+using namespace std;
 
+
+ 
 /*
  * Find Element in the Tree
  * find a node by item_key and provide an updated parent node
  *   pointer and location node pointer
  */
-
-
+ 
+ 
 void BST::find(int item_key, Bnode **prnt, Bnode **loc)
 {
     Bnode *ptr, *ptrsave;
@@ -40,43 +51,44 @@ void BST::find(int item_key, Bnode **prnt, Bnode **loc)
         ptrsave = ptr;
         if (item_key < ptr->key_value)
             ptr = ptr->p_left;
-        else
-            ptr = ptr->p_right;
+	else
+	    ptr = ptr->p_right;
     }
     *loc = NULL;
     *prnt = ptrsave;
 }
-
+ 
 /*
  * Inserting Element into the Tree
  */
 void BST::insert(Bnode *tree, Bnode *newnode)
 {
-    if(root==NULL){
+    // if (we are at root)
+    if(tree == NULL)
+    {
+        // Just create a single node for root to point to,
+        //    with all the data in it.
+        tree = newnode;
         root = newnode;
         return;
     }
-
-    if(tree == root) {
-        Bnode **parentNode = new Bnode *;
-        Bnode **location = new Bnode *;
-        find(newnode->key_value, parentNode, location);
-        if (*location != NULL) {
-            //Just return
-            return;
-        }
+    // if (there is already a node with our key value)
+    if(newnode->key_value == tree->key_value)
+    {
+        //Just return
+        return;
     }
-
+    //if (the new node is less than the current node)
     if(newnode->key_value < tree->key_value)
     {
         //if (see if something is already a child on the left)
         if(tree->p_left != NULL)
         {
-            // if so, the recurse insert at this subtree
+            // if so, the recurse insert at this subtree 	
             insert(tree->p_left, newnode);
-        }
-        else
-        {
+      	}
+      	else
+      	{
             // otherwise the new node goes here as a leaf (ie no children)
             tree->p_left = newnode;
             return;
@@ -85,21 +97,20 @@ void BST::insert(Bnode *tree, Bnode *newnode)
     else  // it must be to the right
     {
         //if (is there already a child on right?)
-        if(tree->p_right != NULL)
+        if (tree->p_right != NULL)
         {
-            // if so, the recurse insert at this subtree
-            insert(tree->p_right, newnode);
+             // if so, the recurse insert at this subtree 
+             insert(tree->p_right, newnode);
         }
         else
         {
             // otherwise the new node goes here as a leaf (ie no children)
             tree->p_right = newnode;
             return;
-        }
+        }	
     }
-
 }
-
+ 
 /*
  * Delete Element from the tree
  */
@@ -118,45 +129,57 @@ void BST::remove(int item)
         return;
     }
     //if (there is no child on left or right)
-    if(location->p_left == NULL && location->p_right == NULL){
+    if (location->p_left == NULL && location->p_right == NULL)
+    {
         case_0(parent, location);
     }
-    else if(location->p_left != NULL && location->p_right == NULL){
-        //if (there is one child on left only)
+        
+    //if (there is one child on left only)
+    else if (location->p_left != NULL && location->p_right == NULL)
+    {
         case_1(parent, location);
     }
-    else if(location->p_left == NULL && location->p_right != NULL){
-        //if (there is one child on right only)
+        
+    //if (there is one child on right only)
+    else if (location->p_left == NULL && location->p_right != NULL)
+    {
         case_1(parent, location);
     }
-    else if(location->p_left != NULL && location->p_right != NULL){
-        // if (there are childred on left and right)
+
+    // if (there are childred on left and right)
+    else 
+    {
         case_2(parent, location);
     }
-    else{
-        cout << "BST::Remove Reached impossible condition";
-    }
+        
+    free(location);
 }
-
+ 
 /*
  * Case 0
  * the node is simply removed no other updates necessary.
  */
 void BST::case_0(Bnode *prnt, Bnode *loc )
 {
-    //free(loc);
-
-    if(loc == root){
+    //if (we are at the root)
+    if (prnt == NULL && loc == root)
+    {
+        //update the root
         root = NULL;
     }
-    else {
-        free(loc);
-        prnt->p_left = NULL;
-        prnt->p_right = NULL;
+    else
+    {
+      // otherwise simply remove node
+      if (prnt->p_left == loc) {
+          prnt->p_left = NULL;
+      }
+      else
+      {
+          prnt->p_right = NULL;
+      }
     }
-
 }
-
+ 
 /*
  * Case 1
  * We have only one child so promote the child and replace the target
@@ -164,97 +187,104 @@ void BST::case_0(Bnode *prnt, Bnode *loc )
  */
 void BST::case_1(Bnode *prnt, Bnode *loc)
 {
-    Bnode* child;
-    if(loc->p_left != NULL && loc->p_right == NULL){
-        child = loc->p_left;
+    Bnode *child;
+    //if (the child is on the left?)
+    if (loc->p_left != NULL)
+    {
+        //point left
+        child  = loc->p_left;
     }
-    else if (loc->p_right != NULL && loc -> p_left == NULL){
+        
+   // else  // must be the right side has child
+    else
+    {
+        // point right
         child = loc->p_right;
     }
-    else{
-        cout << "BST::case_1 Error: Reached impossible position";
+        
+    //if (we are at the root handle specialy)
+    if (prnt == NULL && loc == root)
+    {
+       // update the root
+       root = child;
     }
-
-    if(loc == root){
-        root = child;
+    else
+    {
+        //if (the node is left child of parent)
+        if (prnt->p_left == loc)
+        {
+            //promote the left
+            prnt->p_left = child;
+        }
+            
+        //else // the node is right of parent
+        else
+        {
+            //promote right
+            prnt->p_right = child;
+        }
     }
-    else if(prnt->p_left == loc){
-        prnt->p_left = child;
-    }
-    else{
-        prnt->p_right = child;
-    }
-    free(loc);
 }
-
+ 
 /*
  * Case case_2
  * We have to find and promote a successor or predecessor
  */
 void BST::case_2(Bnode *prnt, Bnode *loc)
 {
-    // temporary pointers for node we are manipulating
-    Bnode* sPrnt = loc;
-    Bnode* sLoc = loc->p_right;
-    // Find successor: Step to the right child
-    // Find the min of the subtree on parent's right
-    while(sLoc->p_left != NULL){
-        sPrnt = sLoc;
-        sLoc = sLoc->p_left;
+    Bnode* tmpP = loc;
+    Bnode* tmp = loc->p_right;
+    //find successor
+    
+    while (tmp->p_left != NULL) {
+      tmpP = tmp;
+      tmp = tmp->p_left;   
     }
-    //if (found node has no children)
-    if(sLoc->p_right == NULL){
-        // Replace the target node with the successor node
-        if(sPrnt->p_right == sLoc){
-            sPrnt->p_right = NULL;
-        }
-        else {
-            sPrnt->p_left = sLoc->p_right;
-        }
-    }
-    else{
-        // Temporarily remove the successor node by replacing it with
-        // its right child, we will replace the node we are removing
-        // with the successor we just removed.
-        if(sPrnt->p_right == sLoc){
-            sPrnt->p_right = sLoc->p_right;
-            sLoc->p_right = NULL;
-        }
-        else {
-            sPrnt->p_left = sLoc->p_right;
-            sLoc->p_right = NULL;
-        }
-    }
-
-    //if (we are at root)
+    //parent points to successor
     if(loc == root)
     {
         //then update root
-        root = sLoc;
+        root = tmp;
     }
+    else if (loc->key_value < prnt->key_value)
+        prnt->p_left = tmp;
     else
-    {
-        // Insert the successor node where the target node we
-        //   are removing is located
-        if(prnt->p_left == loc){
-            prnt->p_left = sLoc;
-        }
-        else{
-            prnt->p_right = sLoc;
-        }
-
-    }
-    // then update the successor child pointers to reflect the old
-    //     target's child pointers.
-    sLoc->p_left = loc->p_left;
-    sLoc->p_right = loc->p_right;
-    free(loc);
+        prnt->p_right = tmp;
+   
+        
+    //set successor p_left to loc p_left
+    tmp->p_left = loc->p_left;
+    tmpP->p_left = tmp->p_right;
+    //tmp->p_left = loc->p_left;    
+    if (loc->p_right->key_value == tmp->key_value)
+        tmp->p_right = loc->p_right->p_right;
+    else
+        tmp->p_right = loc->p_right;  
 }
-
+ 
 
 /*
  * Display Tree Structure
  */
+void BST::display(Bnode *ptr, int level)
+{
+    int i;
+    if (ptr != NULL)
+    {
+        display(ptr->p_right, level+1);
+        //cout<<endl;
+        if (ptr == root)
+            cout<<"Root->: ";
+        else
+        {
+            // for (i = 0;i < level;i++)
+            //     cout<<"       ";
+	}
+        cout<<ptr->key_value<<endl;
+        display(ptr->p_left, level+1);
+    }
+}
+
 void BST::outputToConsole(Bnode *ptr, int level) {
     if (ptr != NULL) {
         outputToConsole(ptr->p_right, level + 1);
@@ -269,7 +299,7 @@ void BST::outputAsString(Bnode *ptr, int level, string* str) {
         *str += to_string(ptr->key_value);
         *str += ",";
         outputAsString(ptr->p_left, level + 1, str);
-    }
+}
 }
 
 void BST::outputAsCSV(std::string filePath) {
@@ -285,4 +315,5 @@ void BST::outputAsCSV(std::string filePath) {
         std::cout << "failed to write valid RFIDs to file" << std::endl;
     }
     myFile.close();
-}
+} 
+
