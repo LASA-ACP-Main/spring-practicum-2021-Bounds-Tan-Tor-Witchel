@@ -241,7 +241,12 @@ void BST::case_2(Bnode *prnt, Bnode *loc)
       tmp = tmp->p_left;   
     }
     //parent points to successor
-    if (loc->key_value < prnt->key_value) 
+    if(loc == root)
+    {
+        //then update root
+        root = tmp;
+    }
+    else if (loc->key_value < prnt->key_value)
         prnt->p_left = tmp;
     else
         prnt->p_right = tmp;
@@ -279,4 +284,36 @@ void BST::display(Bnode *ptr, int level)
         display(ptr->p_left, level+1);
     }
 }
+
+void BST::outputToConsole(Bnode *ptr, int level) {
+    if (ptr != NULL) {
+        outputToConsole(ptr->p_right, level + 1);
+        cout << ptr->key_value << endl;
+        outputToConsole(ptr->p_left, level + 1);
+    }
+}
+
+void BST::outputAsString(Bnode *ptr, int level, string* str) {
+    if (ptr != NULL) {
+        outputAsString(ptr->p_right, level + 1, str);
+        *str += to_string(ptr->key_value);
+        *str += ",";
+        outputAsString(ptr->p_left, level + 1, str);
+}
+}
+
+void BST::outputAsCSV(std::string filePath) {
+    std::ofstream myFile(filePath);
+    if (myFile.is_open())
+    {
+        string* str = new string;
+        *str = "";
+        outputAsString(root, 0, str);
+        myFile << *str;
+    }
+    else{
+        std::cout << "failed to write valid RFIDs to file" << std::endl;
+    }
+    myFile.close();
+} 
 

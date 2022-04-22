@@ -34,6 +34,8 @@ public:
     void outputToConsole(Bnode *, int);
     void outputAsCSV(std::string filePath);
     void outputAsString(Bnode*, int, string* str);
+    void display(Bnode* ptr, int level);
+
     BST()
     {
         root = NULL;
