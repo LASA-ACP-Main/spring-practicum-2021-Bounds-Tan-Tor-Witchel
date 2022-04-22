@@ -1,4 +1,3 @@
-
 #include "Rfid.h"
 
 
@@ -41,7 +40,7 @@ bool Rfid::isCodeGood(){
 
     return false;
 }
-
+cd
 void Rfid::shutdown(){
     //write all valid RFIDs to file
     auto out = ofstream(rfidFilePath);
