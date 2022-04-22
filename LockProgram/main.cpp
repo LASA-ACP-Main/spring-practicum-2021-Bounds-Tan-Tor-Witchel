@@ -15,7 +15,6 @@
 
 //Todo:
 //custom binary tree implementation for RFIDs
-//where is that second data structure coming in again? custom queue?
 //require both codes to be inputted within a certain time of each other (15 seconds?)
 #define pathToRfidInput "rfidIn.txt"
 #define pathToNumpadInput "numpadIn.txt"
@@ -55,18 +54,26 @@ void getKeypadInput(Keypad* numPad){
     std::fstream keypadFile(pathToNumpadInput);
     if (keypadFile.is_open() && !keypadFile.eof())
     {
-        //read and clear
+        //read
         getline(keypadFile, keypadRaw);
-        keypadFile << "";
     }
     else{
         std::cout << "failed to read keypadRaw from file" << std::endl;
+        return;
     }
     keypadFile.close();
 
+    //clear
+    std::ofstream clearing(pathToNumpadInput);
+    clearing.close();
+
+    if(keypadRaw.empty()){
+        return;
+    }
+
     for(char x : keypadRaw){
         if(x == '#'){
-            numPad->addValue(to_string(x));
+            numPad->addValue("#");
             break;
         }
 
@@ -74,7 +81,7 @@ void getKeypadInput(Keypad* numPad){
             std::cout << "Invalid Keypad Input" << std::endl;
         }
         else {
-            numPad->addValue(to_string(x));
+            numPad->addValue(std::string(1,x));
         }
     }
 }
@@ -84,14 +91,22 @@ void getRfidInput(Rfid* rfidScanner){
     std::fstream rfidFile(pathToRfidInput);
     if (rfidFile.is_open() && !rfidFile.eof())
     {
-        //read and clear
+        //read
         getline(rfidFile, rfidRaw);
-        rfidFile << "";
     }
     else{
         std::cout << "failed to read rfidRaw from file" << std::endl;
+        return;
     }
     rfidFile.close();
+
+    //clear
+    std::ofstream clearing(pathToRfidInput);
+    clearing.close();
+
+    if(rfidRaw.empty()){
+        return;
+    }
 
     if(rfidRaw.length() != 6 || !isNumLong(rfidRaw)){
         std::cout << "Invalid Input" << std::endl;
@@ -103,47 +118,65 @@ void getRfidInput(Rfid* rfidScanner){
 
 void checkManagementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock, bool* keepRunning){
     std::vector<std::string> managementRaw;
+    std::string* temp;
     int counter = 0;
     std::fstream managementFile(pathToManagementInput);
+    if(!managementFile.is_open() || managementFile.eof()){
+        std::cout << "failed to read managementRaw from file" << std::endl;
+        return;
+    }
     while (managementFile.is_open() && !managementFile.eof())
     {
-        //read and clear
-        getline(managementFile, managementRaw[counter]);
+        //read
+        temp = new std::string;
+        getline(managementFile, *temp);
+        managementRaw.push_back(*temp);
     }
-    managementFile << "";
-
     managementFile.close();
 
+
+    //clear
+    std::ofstream clearing(pathToManagementInput);
+    clearing.close();
+
+    if(managementRaw.empty()){
+        return;
+    }
 
     std::vector<std::string> users;
     std::string toRemove = "";
     std::string toAdd;
     std::string secretToAdd;
     for(std::string x : managementRaw) {
-        //Input Loop
-        int feature = stoi(x.substr(0,1));
-        switch (feature) {
-            case 0:
-                rfidScanner->shutdown();
-                numPad->shutdown();
-                secureLock->shutdown();
-                *keepRunning = false;
-                break;
-            case 1:
-                toRemove = x.substr(1, x.length()-1);
-                rfidScanner->removeUser(toRemove);
-                break;
-            case 2:
-                toAdd = x.substr(1, x.length()-1);
-                rfidScanner->addUser(toAdd);
-                break;
-            case 4:
-                secretToAdd = x.substr(1, x.length()-1);
-                numPad->setSecret(secretToAdd);
-                break;
-            default:
-                std::cout << "Invalid Input" << std::endl;
-                break;
+        if (x != "") {
+            int feature = stoi(x.substr(0, 1));
+            switch (feature) {
+                case 0:
+                    std::cout << "Shutdown" << std::endl;
+                    rfidScanner->shutdown();
+                    numPad->shutdown();
+                    secureLock->shutdown();
+                    *keepRunning = false;
+                    break;
+                case 1:
+                    toRemove = x.substr(1, x.length() - 1);
+                    rfidScanner->removeUser(toRemove);
+                    std::cout << "Removed from RFID Users " << toRemove << std::endl;
+                    break;
+                case 2:
+                    toAdd = x.substr(1, x.length() - 1);
+                    rfidScanner->addUser(toAdd);
+                    std::cout << "Added to RFID Users " << toAdd << std::endl;
+                    break;
+                case 3:
+                    secretToAdd = x.substr(1, x.length() - 1);
+                    numPad->setSecret(secretToAdd);
+                    std::cout << "Set OTP Secret to " << secretToAdd << std::endl;
+                    break;
+                default:
+                    std::cout << "Invalid Input" << std::endl;
+                    break;
+            }
         }
     }
 }
@@ -154,8 +187,8 @@ int main() {
     Rfid* rfidScanner = new Rfid("../validRFIDs.csv");
     Lock* secureLock = new Lock;
 
-    bool* keepRunning;
-    *keepRunning = false;
+    bool* keepRunning = new bool;
+    *keepRunning = true;
     bool keyCode = false;
     bool rfidCode = false;
 

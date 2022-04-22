@@ -14,8 +14,6 @@
 //That may only be possible (or at least may be made much easier) when the inputs are separate pieces of hardware, in which case the simulation may be a little flawed.
 
 //Todo:
-//custom binary tree implementation for RFIDs
-//where is that second data structure coming in again? custom queue?
 //require both codes to be inputted within a certain time of each other (15 seconds?)
 
 void shutdownActions(){

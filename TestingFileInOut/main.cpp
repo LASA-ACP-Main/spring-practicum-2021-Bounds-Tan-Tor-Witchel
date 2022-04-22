@@ -40,11 +40,12 @@ void getKeypadInput(){
     std::fstream keypadFile(pathToNumpadInput);
     if (keypadFile.is_open() && !keypadFile.eof())
     {
-        //read and clear
+        //read
         getline(keypadFile, keypadRaw);
     }
     else{
         std::cout << "failed to read keypadRaw from file" << std::endl;
+        return;
     }
     keypadFile.close();
 
@@ -72,6 +73,7 @@ void getKeypadInput(){
 void getRfidInput(){
     std::string rfidRaw = "";
     std::fstream rfidFile(pathToRfidInput);
+
     if (rfidFile.is_open() && !rfidFile.eof())
     {
         //read and clear
@@ -79,6 +81,7 @@ void getRfidInput(){
     }
     else{
         std::cout << "failed to read rfidRaw from file" << std::endl;
+        return;
     }
     rfidFile.close();
 
@@ -101,9 +104,14 @@ void checkManagementMode(bool* keepRunning){
     std::string* temp;
     int counter = 0;
     std::fstream managementFile(pathToManagementInput);
+
+    if(!managementFile.is_open() || managementFile.eof()){
+        std::cout << "failed to read managementRaw from file" << std::endl;
+        return;
+    }
     while (managementFile.is_open() && !managementFile.eof())
     {
-        //read and clear
+        //read
         temp = new std::string;
         getline(managementFile, *temp);
         managementRaw.push_back(*temp);
