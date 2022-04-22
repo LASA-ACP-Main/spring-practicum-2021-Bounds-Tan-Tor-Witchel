@@ -5,27 +5,26 @@
 #include<algorithm>
 #include <fstream>
 #include "csvManager.h"
-
+#include "BSTree.h"
 
 #ifndef LOCKSIMULATION_RFID_H
 #define LOCKSIMULATION_RFID_H
 //this will be replaced with a binary tree in the final implementation
 class Rfid {
 private:
-    std::vector<std::string> authorizedUsers;
-    std::string currentCode;
+    BST* authorizedUsers = new BST;
+    int currentCode;
     std::string rfidFilePath;
 public:
     Rfid(std::string filePath);
 
-    void addUser(std::string userToAdd);
+    void addUser(int userToAdd);
 
-    void removeUser(std::string userToRemove);
-    void removeUser(int index);
+    void removeUser(int userToRemove);
 
-    std::vector<std::string> getUsers();
+    BST* getUsers();
 
-    void setCurrentCode(std::string input);
+    void setCurrentCode(int input);
 
     void shutdown();
 

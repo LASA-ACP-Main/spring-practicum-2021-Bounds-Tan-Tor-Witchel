@@ -70,7 +70,7 @@ void getRfidInput(Rfid* rfidScanner){
         std::cout << "Invalid Input" << std::endl;
     }
     else {
-        rfidScanner->setCurrentCode(s);
+        rfidScanner->setCurrentCode(stoi(s));
     }
 }
 
@@ -80,6 +80,7 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
     int toRemove = -1;
     std::string toAdd;
     std::string secretToAdd;
+    BST* tree;
     while(inManagement) {
         //Input Loop
         std::cout << "Specify Management Feature" << std::endl;
@@ -92,26 +93,18 @@ void managementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock){
                 inManagement = false;
                 break;
             case 1:
-                users = rfidScanner->getUsers();
-                std::cout << "Users: "<< std::endl;
-                for(int i = 0; i < users.size(); i++){
-                    std::cout << "[" << i << "] " << users[i] << std::endl;
-                }
+                tree = rfidScanner->getUsers();
+                tree->outputToConsole(tree->root, 0);
                 break;
             case 2:
                 std::cout << "User Code to Remove: " << std::endl;
                 std::cin >> toRemove;
-                if(toRemove < 0 || toRemove >= users.size()){
-                    std::cout << "Not in Range" << std::endl;
-                }
-                else{
-                    rfidScanner->removeUser(toRemove);
-                }
+                rfidScanner->removeUser(toRemove);
                 break;
             case 3:
                 std::cout << "User Code to Add: " << std::endl;
                 std::cin >> toAdd;
-                rfidScanner->addUser(toAdd);
+                rfidScanner->addUser(stoi(toAdd));
                 break;
             case 4:
                 std::cout << "OTP Secret: " << std::endl;
@@ -135,8 +128,8 @@ int main() {
     Lock* secureLock = new Lock;
 
     bool keepRunning = true;
-    bool keyCode = false;
-    bool rfidCode = false;
+    bool keyCode = true;
+    bool rfidCode = true;
 
     while(keepRunning) {
         //Check to open the lock

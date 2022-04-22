@@ -5,18 +5,18 @@
 
 void SQueue::push(std::string item)
 {
-    node* newNode = new node;
+    Qnode* newNode = new Qnode;
     newNode->data = item;
     newNode->link = nullptr;
     if(front == nullptr){
         front = newNode;
     }
     else{
-        node* counting = front;
+        Qnode* counting = front;
         while(counting->link != nullptr) {
                 counting = counting->link;
         }
-        node* temp = counting->link;
+        Qnode* temp = counting->link;
         counting->link = newNode;
         newNode->link = temp;
     }
@@ -49,7 +49,7 @@ std::string SQueue::pop()
 }
 void SQueue::display()
 {
-    node* counter = front;
+    Qnode* counter = front;
     while(counter != nullptr){
         std::cout<<(counter->data)<<std::endl;
         counter = counter->link;
