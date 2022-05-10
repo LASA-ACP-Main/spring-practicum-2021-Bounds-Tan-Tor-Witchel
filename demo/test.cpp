@@ -12,7 +12,7 @@ extern "C" {
 //wiringPi numbers, NOT BCM
 #define L1 23
 #define L2 25
-#define L3 11
+#define L3 22
 #define L4 31
 
 #define C1 26
@@ -28,19 +28,22 @@ using namespace std;
 void readLine(int line,string characters[4]){
     digitalWrite(line, 1);
     
-	//for some reason, L4+C2 (character 0) also triggers L4+C1 (character *)
-	//because of this, they are conditional in reverse order.
+	//some of this is very broken - current is leaking between them
     if(digitalRead(C4) == 1){
-        cout << (characters[3]) << endl;
+        //cout << (characters[3]) << endl;
+        delay(100);
         }
-    else if(digitalRead(C3) == 1){
+    if(digitalRead(C3) == 1){
         cout << (characters[2]) << endl;
+        delay(100);
 	}
-    else if(digitalRead(C2) == 1){
+    if(digitalRead(C2) == 1){
         cout << (characters[1]) << endl;
+        delay(100);
 	}
-    else if(digitalRead(C1) == 1){
+    if(digitalRead(C1) == 1){
         cout << (characters[0]) << endl;
+        delay(100);
 	}
     digitalWrite(line, 0);
 }
@@ -115,6 +118,7 @@ int main(void){
 		cout << UID << "\n";
 		delay(500);
 		}
+	
 	}
 	return 0;
 }
