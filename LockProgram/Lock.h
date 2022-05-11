@@ -1,4 +1,8 @@
-#include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+extern "C" {
+#include <wiringPi.h>
+}
 
 #ifndef LOCKSIMULATION_LOCK_H
 #define LOCKSIMULATION_LOCK_H

@@ -2,15 +2,9 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <string>
-#include <cstdio>
-#include <unistd.h>
 #include "Lock.h"
 #include "Rfid.h"
 #include "Keypad.h"
-extern "C" {
-#include <wiringPi.h>
-}
 
 //The main idea behind all of this is that there is a very high level of abstraction between main and each individual identification device
 //Each device manages itself and only interact with main as a boolean response of valid or invalid.
@@ -25,46 +19,106 @@ extern "C" {
 //Todo:
 //custom binary tree implementation for RFIDs
 //require both codes to be inputted within a certain time of each other (15 seconds?)
-#define pathToManagementInput "managementIn.txt"
+#define pathToRfidInput "../rfidIn.txt"
+#define pathToNumpadInput "../numpadIn.txt"
+#define pathToManagementInput "../managementIn.txt"
 
-//wiringPi numbers, NOT BCM
-#define L1 23
-#define L2 25
-#define L3 22
-#define L4 31
+void shutdownActions(){
 
-#define C1 26
-#define C2 27
-#define C3 28
-#define C4 29
+}
 
-//RFID Reset pin = 22
-//RFID SCK Pin = 24 (I think, that may be SDA)
-
-void readLine(int line,std::string characters[4], std::string* keypadOut){
-    digitalWrite(line, 1);
-
-    //some of this is very broken - current is leaking between them
-    if(digitalRead(C4) == 1){
-        //std::cout << (characters[3]) << std::endl;
-        //delay(100);
+bool isNum(std::string s){
+    if(s == "0" || s == "1" || s == "2" || s == "3" || s == "4" || s == "5" || s == "6" || s == "7" ||
+       s == "8" || s == "9"){
+        return true;
     }
-    if(digitalRead(C3) == 1){
-        std::cout << (characters[2]) << std::endl;
-        *keypadOut = characters[2];
-        delay(100);
+    return false;
+}
+
+bool isNum(char s){
+    if(s == '0'  || s == '1' ||  s == '2' ||  s == '3' || s == '4'  || s == '5' || s == '6' || s == '7' ||
+       s == '8' || s == '9'){
+        return true;
     }
-    if(digitalRead(C2) == 1){
-        std::cout << (characters[1]) << std::endl;
-        *keypadOut = characters[1];
-        delay(100);
+    return false;
+}
+
+bool isNumLong(std::string s){
+    for(int i = 0; i < s.length(); i++){
+        if(!isNum(s[i])){
+            return false;
+        }
     }
-    if(digitalRead(C1) == 1){
-        std::cout << (characters[0]) << std::endl;
-        *keypadOut = characters[0];
-        delay(100);
+    return true;
+}
+
+void getKeypadInput(Keypad* numPad, bool* keyCode){
+    std::string keypadRaw = "";
+    std::fstream keypadFile(pathToNumpadInput);
+    if (keypadFile.is_open() && !keypadFile.eof())
+    {
+        //read
+        getline(keypadFile, keypadRaw);
     }
-    digitalWrite(line, 0);
+    else{
+        std::cout << "failed to read keypadRaw from file" << std::endl;
+        return;
+    }
+    keypadFile.close();
+
+    //clear
+    std::ofstream clearing(pathToNumpadInput);
+    clearing.close();
+
+    if(keypadRaw.empty()){
+        return;
+    }
+
+    for(char x : keypadRaw){
+        if(x == '#'){
+            numPad->addValue("#");
+            *keyCode = numPad->isCodeGood();
+            return;
+        }
+
+        if (!isNum(x)) {
+            std::cout << "Invalid Keypad Input" << std::endl;
+        }
+        else {
+            numPad->addValue(std::string(1,x));
+        }
+    }
+}
+
+void getRfidInput(Rfid* rfidScanner, bool* rfidCode){
+    std::string rfidRaw = "";
+    std::fstream rfidFile(pathToRfidInput);
+    if (rfidFile.is_open() && !rfidFile.eof())
+    {
+        //read
+        getline(rfidFile, rfidRaw);
+    }
+    else{
+        std::cout << "failed to read rfidRaw from file" << std::endl;
+        return;
+    }
+    rfidFile.close();
+
+    //clear
+    std::ofstream clearing(pathToRfidInput);
+    clearing.close();
+
+    if(rfidRaw.empty()){
+        return;
+    }
+
+    if(rfidRaw.length() != 6 || !isNumLong(rfidRaw)){
+        std::cout << "Invalid Input" << std::endl;
+    }
+    else {
+        rfidScanner->setCurrentCode(rfidRaw);
+    }
+    *rfidCode = rfidScanner->isCodeGood();
 }
 
 void checkManagementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock, bool* keepRunning){
@@ -111,12 +165,12 @@ void checkManagementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock, bo
                     break;
                 case 1:
                     toRemove = x.substr(1, x.length() - 1);
-                    rfidScanner->removeUser(stoi(toRemove));
+                    rfidScanner->removeUser(toRemove);
                     std::cout << "Removed from RFID Users " << toRemove << std::endl;
                     break;
                 case 2:
                     toAdd = x.substr(1, x.length() - 1);
-                    rfidScanner->addUser(stoi(toAdd));
+                    rfidScanner->addUser(toAdd);
                     std::cout << "Added to RFID Users " << toAdd << std::endl;
                     break;
                 case 3:
@@ -133,8 +187,6 @@ void checkManagementMode(Keypad* numPad, Rfid* rfidScanner, Lock* secureLock, bo
 }
 
 int main() {
-    //init
-    wiringPiSetup();
 
     Keypad* numPad = new Keypad("../OTPSecret.txt");
     Rfid* rfidScanner = new Rfid("../validRFIDs.csv");
@@ -146,35 +198,7 @@ int main() {
     *keyCode = false;
     bool* rfidCode = new bool;
     *rfidCode = false;
-    std::string* keypadCurrent = new std::string;
-    *keypadCurrent = "";
 
-    pinMode(L1, OUTPUT);
-    pinMode(L2, OUTPUT);
-    pinMode(L3, OUTPUT);
-    pinMode(L4, OUTPUT);
-
-    pinMode(C1, INPUT);
-    pinMode(C2, INPUT);
-    pinMode(C3, INPUT);
-    pinMode(C4, INPUT);
-
-    pullUpDnControl(C1,  PUD_DOWN);
-    pullUpDnControl(C2,  PUD_DOWN);
-    pullUpDnControl(C3,  PUD_DOWN);
-    pullUpDnControl(C4,  PUD_DOWN);
-
-    std::string line1[4] = {"1","2","3","A"};
-    std::string line2[4] = {"4","5","6","B"};
-    std::string line3[4] = {"7","8","9","C"};
-    std::string line4[4] = {"*","0","#","D"};
-
-    MFRC522 rfid;
-    rfid.PCD_Init();
-    std::string UID;
-
-
-    //running loop
     while(*keepRunning) {
         //Check to open the lock
         if(*keyCode && *rfidCode){
@@ -185,59 +209,11 @@ int main() {
         }
 
         //Input Loop
-        //get RFID input
-        if(!rfid.PICC_IsNewCardPresent()){}
-
-        else if( !rfid.PICC_ReadCardSerial()){}
-
-        else{
-            UID = "";
-            // Print UID
-            for(byte i = 0; i < rfid.uid.size; ++i){
-                if(rfid.uid.uidByte[i] < 0x10){
-                    UID+=" 0";
-                    UID+= to_string(rfid.uid.uidByte[i]);
-                }
-                else{
-                    UID+= " ";
-                    UID+= to_string(rfid.uid.uidByte[i]);
-                }
-            }
-            cout << UID << "\n";
-            delay(500);
-        }
-        //parse RFID input
-        std::hash<std::string> str_hash;
-        //the 0s are to ensure there is a start to the code if the hash is small
-        UID = "000000"+std::to_string(str_hash(UID));
-        int rfidIn = stoi(UID.substr(UID.length()-6, UID.length()));
-        rfidScanner->setCurrentCode(rfidIn);
-        *rfidCode = rfidScanner->isCodeGood();
-
-        //get Keypad input
-        readLine(L1, line1, keypadCurrent);
-        readLine(L2, line2, keypadCurrent);
-        readLine(L3, line3, keypadCurrent);
-        readLine(L4, line4, keypadCurrent);
-        delay(100);
-        //parse Keypad input
-            if(*keypadCurrent == "*"){
-                *rfidCode = false;
-                *keyCode = false;
-                rfidScanner->isCodeGood();
-                numPad->isCodeGood();
-            }
-            else if(*keypadCurrent == "#"){
-                numPad->addValue("#");
-                *keyCode = numPad->isCodeGood();
-            }
-            else {
-                numPad->addValue(*keypadCurrent);
-            }
-
-        //this is just to make sure it isn't going crazy on the disk. The delay is arbitrary and can be changed.
-        delay(100);
+        getRfidInput(rfidScanner, rfidCode);
+        getKeypadInput(numPad, keyCode);
         checkManagementMode(numPad, rfidScanner, secureLock, keepRunning);
+        //this is just to make sure it isn't going crazy on the disk. The delay is arbitrary and can be changed.
+        this_thread::sleep_for(chrono::milliseconds(100) );
     }
     return 0;
 }

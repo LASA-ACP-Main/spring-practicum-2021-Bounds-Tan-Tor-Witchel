@@ -16,5 +16,5 @@ Lock::Lock(){
 }
 
 void Lock::shutdown(){
-    open = false;
+    closeLock();
 }

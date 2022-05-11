@@ -6,15 +6,18 @@ bool Lock::getState(){
 }
 void Lock::openLock(){
     open = true;
-    system("python3 \"../Python Scripts/open.py\"");
+    pinMode(24, OUTPUT);
+    digitalWrite(24, LOW);
+    delay(100);
 }
 void Lock::closeLock(){
     open = false;
-    system("python3 \"../Python Scripts/close.py\"");
+    pinMode(24, INPUT);
 }
 
-Lock::Lock(){
+Lock::Lock() {
     open = false;
+    pinMode(24, INPUT);
 }
 
 void Lock::shutdown(){

@@ -44,9 +44,11 @@ bool Rfid::isCodeGood(){
     authorizedUsers->find(currentCode, parent, location);
     if(*location == nullptr) {
         cout << "Code is not authorized" << endl;
+        currentCode = 000000;
         return false;
     }
     cout << "Authorized Code Accepted" << endl;
+    currentCode = 000000;
     return true;
 }
 

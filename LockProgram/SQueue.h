@@ -4,10 +4,10 @@
 #ifndef SQUEUE_H
 #define SQUEUE_H
 
-struct node
+struct Qnode
 {
 	std::string data;
-    node* link;
+    Qnode* link;
 };
 
 
@@ -15,7 +15,7 @@ class SQueue
 {
 
 	private:
-		node *front;
+        Qnode *front;
         int queueSize = 0;
 
 	public:

@@ -9,7 +9,7 @@
 
 #ifndef LOCKSIMULATION_RFID_H
 #define LOCKSIMULATION_RFID_H
-//this will be replaced with a binary tree in the final implementation
+
 class Rfid {
 private:
     BST* authorizedUsers = new BST;
