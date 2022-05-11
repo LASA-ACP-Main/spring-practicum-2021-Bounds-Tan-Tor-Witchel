@@ -8,7 +8,7 @@ Planning Doc: https://docs.google.com/document/d/1i3pypHXbqI5_tdd0WKd9QsthysdUaW
 
 **LockProgram**
 
-This is the application that will actually run on the raspberry pi. It will read input from 3 files (one for the RFID scanner, one for the keypad, and one for management).
+This is the application that will actually run on the raspberry pi. It will interact with the hardware ane a file for management and is built on the shell of LockSimulation.
 
 **LockSimulation**
 
@@ -20,8 +20,12 @@ This is an app that will generate an OTP code which will match the code generate
 
 **Python Scripts**
 
-These are a series of short python scripts which control the hardware. They are mainly for testing the hardware, but may be used to trigger certain aspects of the hardware in the final version. Some of these will need to be running alongside the main program to actively read hardware and send its input to the files.
+These are a series of short python scripts which control the hardware. They are mainly for testing the hardware, but may be used to trigger certain aspects of the hardware in the final version. They have been depricated as c++ versions were made in demo.
 
 **TestingFileInOut**
 
-This is a simple program that can be used to test simultaneous read / write to a given file by multiple programs. This system will be used to transfer data between the python layer and the c++ layer.
+This is a simple program that can be used to test simultaneous read / write to a given file by multiple programs. This system will be used to manage the running system instead of console.
+
+**demo**
+
+This is a demonstration of c++ hardware interactions.
