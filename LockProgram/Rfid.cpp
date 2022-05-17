@@ -42,7 +42,7 @@ bool Rfid::isCodeGood(){
     Bnode** parent = new Bnode*;
     Bnode** location = new Bnode*;
     authorizedUsers->find(currentCode, parent, location);
-    cout << "Code: " << currentCode << endl;
+    //cout << "Code: " << currentCode << endl;
     if(*location == nullptr) {
         cout << "Code is not authorized" << endl;
         currentCode = 000000;
