@@ -1,5 +1,9 @@
 #include <cstdio>
 #include <unistd.h>
+#include <raspicam/raspicam.h>
+#include <ctime>
+#include <fstream>
+#include <iostream>
 extern "C" {
 #include <wiringPi.h>
 }
@@ -9,6 +13,7 @@ extern "C" {
 class Lock {
 private:
     bool open;
+    raspicam::RaspiCam Camera;
 public:
     Lock();
 

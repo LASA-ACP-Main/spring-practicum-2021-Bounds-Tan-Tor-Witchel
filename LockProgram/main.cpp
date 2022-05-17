@@ -1,3 +1,5 @@
+//g++ *.cpp -lbcm2835 -lwiringPi -lraspicam
+
 //normal imports
 #include <iostream>
 #include <thread>
@@ -8,6 +10,7 @@
 #include "Lock.h"
 #include "Rfid.h"
 #include "Keypad.h"
+#include "MFRC522.h"
 extern "C" {
 #include <wiringPi.h>
 }
@@ -136,8 +139,8 @@ int main() {
     //init
     wiringPiSetup();
 
-    Keypad* numPad = new Keypad("../OTPSecret.txt");
-    Rfid* rfidScanner = new Rfid("../validRFIDs.csv");
+    Keypad* numPad = new Keypad("OTPSecret.txt");
+    Rfid* rfidScanner = new Rfid("validRFIDs.csv");
     Lock* secureLock = new Lock;
 
     bool* keepRunning = new bool;
@@ -205,14 +208,14 @@ int main() {
             }
             cout << UID << "\n";
             delay(500);
-        }
+        
         //parse RFID input
         std::hash<std::string> str_hash;
         //the 0s are to ensure there is a start to the code if the hash is small
         UID = "000000"+std::to_string(str_hash(UID));
         int rfidIn = stoi(UID.substr(UID.length()-6, UID.length()));
         rfidScanner->setCurrentCode(rfidIn);
-        *rfidCode = rfidScanner->isCodeGood();
+		}
 
         //get Keypad input
         readLine(L1, line1, keypadCurrent);
@@ -226,18 +229,21 @@ int main() {
                 *keyCode = false;
                 rfidScanner->isCodeGood();
                 numPad->isCodeGood();
+                secureLock->closeLock();
             }
             else if(*keypadCurrent == "#"){
                 numPad->addValue("#");
                 *keyCode = numPad->isCodeGood();
+                *rfidCode = rfidScanner->isCodeGood();
             }
-            else {
+            else if (*keypadCurrent != ""){
                 numPad->addValue(*keypadCurrent);
             }
+            *keypadCurrent = "";
 
         //this is just to make sure it isn't going crazy on the disk. The delay is arbitrary and can be changed.
         delay(100);
-        checkManagementMode(numPad, rfidScanner, secureLock, keepRunning);
+        //checkManagementMode(numPad, rfidScanner, secureLock, keepRunning);
     }
     return 0;
 }

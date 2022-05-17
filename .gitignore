@@ -3,3 +3,5 @@ cmake-build-debug/
 node_modules/
 package.json
 package-lock.json
+*.gch
+LockProgram/*.gch
