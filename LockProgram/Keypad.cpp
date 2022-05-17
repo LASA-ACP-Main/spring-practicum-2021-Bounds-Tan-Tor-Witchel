@@ -37,9 +37,9 @@ bool Keypad::isCodeGood(){
     if(codeReady){
         //check code against OTP generation
         std::string code = getCode();
-        std::cout << "Padcode: " << code << std::endl;
-        std::cout << oneTimePass->getCode() << std::endl;
-        std::cout << oneTimePass->getLastCode() << std::endl;
+        //std::cout << "Padcode: " << code << std::endl;
+        //std::cout << oneTimePass->getCode() << std::endl;
+        //std::cout << oneTimePass->getLastCode() << std::endl;
         if(code == oneTimePass->getCode() || code == oneTimePass->getLastCode()){
             return true;
         }
