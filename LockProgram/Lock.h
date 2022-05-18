@@ -4,6 +4,7 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <time.h>
 extern "C" {
 #include <wiringPi.h>
 }
