@@ -243,7 +243,7 @@ int main() {
 
         //this is just to make sure it isn't going crazy on the disk. The delay is arbitrary and can be changed.
         delay(100);
-        //checkManagementMode(numPad, rfidScanner, secureLock, keepRunning);
+        checkManagementMode(numPad, rfidScanner, secureLock, keepRunning);
     }
     return 0;
 }
