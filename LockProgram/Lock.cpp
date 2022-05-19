@@ -21,7 +21,7 @@ void Lock::openLock(){
     timeStr.append(asctime(timeinfo));
     timeStr = timeStr.substr(0, timeStr.size()-1);
     //save
-    std::ofstream outFile ( "photos/Lock Opened At "+timeStr+".ppm",std::ios::binary );
+    std::ofstream outFile ( "photos/Lock Opened At "+timeStr+" UTC.ppm",std::ios::binary );
     outFile<<"P6\n"<<Camera.getWidth() <<" "<<Camera.getHeight() <<" 255\n";
     outFile.write ( ( char* ) data, Camera.getImageTypeSize ( raspicam::RASPICAM_FORMAT_RGB ) );
     std::cout<<"Image saved"<<std::endl;
